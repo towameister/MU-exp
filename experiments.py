@@ -47,39 +47,39 @@ def comparison():
     kmeans = Kmeans(k)
     centers, assignments, loss = kmeans.run(mnist.copy())
     print(f'Kmeans Training Clustering loss is {loss}')
-    # print(f'Kmeans Training Silhouette Coefficient is {silhouette_score(mnist, assignments)}')
+ 
 
     qkmeans = QKmeans(k, 0.05)
     q_centers, q_assignments, q_loss = qkmeans.run(mnist.copy())
     print(f'QKmeans Training Clustering loss is {q_loss}')
-    # print(f'QKmeans Training Silhouette Coefficient is {silhouette_score(mnist, q_assignments)}')
+   
 
     dckmeans = DCKmeans([k, k], [1, 16])
     dc_centers, dc_assignments, dc_loss = dckmeans.run(mnist.copy(), assignments=True)
     print(f'DCKmeans Training Clustering loss is {dc_loss}')
-    # print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(mnist, dc_assignments)}')
+    
 
     print('Simulation deletion stream for Kmeans')
     online_deletion_stream(100, kmeans)
     print(f'Kmeans Clustering loss after unlearning is {kmeans.loss}')
-    # print(f'Kmeans Silhouette Coefficient after unlearning is: {silhouette_score(kmeans.data, kmeans.assignments)}')
+   
 
     print('Simulation deletion stream for Qkmeans')
     online_deletion_stream(100, qkmeans)
     print(f'QKmeans Clustering loss after unlearning is {qkmeans.minloss}')
-    # print(f'QKMeans Silhouette Coefficient for QKmeans after unlearning is {silhouette_score(qkmeans.data, qkmeans.assignments)}')
+   
 
     print('Simulation deletion stream for DCkmeans')
     online_deletion_stream(100, dckmeans)
     print(f'DCKmeans Clustering loss after unlearning is {dckmeans.loss}')
-    # print(f'DCKmeans Silhouette Coefficient for DCKmeans after unlearning is {silhouette_score(dckmeans.dc_tree[0][0].data, dckmeans.dc_tree[0][0].assignments)}')
+    
 
 
 def qkmeansvaryeps():
     print('______________________QKMEANS WITH VARYING EPSILON__________________________')
-    #    qkmeans1 = QKmeans(k, 0.05)
-    #    q_centers1, q_assignments1, q_loss1 = qkmeans1.run(mnist.copy())
-    #    print(f'QKmeans 0.05 Training Clustering loss is {q_loss1}')
+    qkmeans1 = QKmeans(k, 0.05)
+    q_centers1, q_assignments1, q_loss1 = qkmeans1.run(mnist.copy())
+    print(f'QKmeans 0.05 Training Clustering loss is {q_loss1}')
     qkmeans2 = QKmeans(k, 0.005)
     q_centers2, q_assignments2, q_loss2 = qkmeans2.run(mnist.copy())
     print(f'QKmeans 0.005 Training Clustering loss is {q_loss2}')
@@ -87,9 +87,9 @@ def qkmeansvaryeps():
     q_centers3, q_assignments3, q_loss3 = qkmeans3.run(mnist.copy())
     print(f'QKmeans 0.5 Training Clustering loss is {q_loss3}')
 
-    #    print('Simulation deletion stream for Qkmeans 0.05')
-    #    online_deletion_stream(100, qkmeans1)
-    #    print(f'QKmeans Clustering loss after unlearning is {qkmeans1.minloss}')
+    print('Simulation deletion stream for Qkmeans 0.05')
+    online_deletion_stream(100, qkmeans1)
+    print(f'QKmeans Clustering loss after unlearning is {qkmeans1.minloss}')
 
     print('Simulation deletion stream for Qkmeans 0.005')
     online_deletion_stream(100, qkmeans2)
