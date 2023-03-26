@@ -2,3 +2,7 @@ This repository contains the code used to generate the experimental results for 
 Data Deletion in Machine Learning" by Ginart et al. The code has largely been forked from Ginarts own implementation, which can be found here: https://github.com/tginart/deletion-efficient-kmeans
 
 the dataset file used in the code can be downloaded [here](https://drive.google.com/drive/folders/1LqazOJuH3uOgFxHtBodwon6htEE2Wq13).
+
+
+
+before running the experiments with 'python experiments.py', be sure to install the necessary packages with 'pip install -r requirements.txt'.
