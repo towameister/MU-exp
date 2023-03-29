@@ -26,7 +26,21 @@ def prepare_mnist():
     _mnist_labels = data['mnist'][1]
     _n = _mnist.shape[0]
     _k = data['mnist'][2]
-    return _mnist, _mnist_labels, _n, _k
+    # return _mnist, _mnist_labels, _n, _k
+    return _mnist, _n, _k
+
+
+def prepare_sampleclusters():
+    _k = 3
+    _n1 = 150 ** 2
+    _n2 = 150 ** 2
+    _n3 = 150 ** 2
+    _n = _n1 + _n2 + _n3
+    cov = [[0.05, 0], [0, 0.05]]
+    cluster1 = np.random.multivariate_normal([3, 3], cov, _n1)
+    cluster2 = np.random.multivariate_normal([3, 3.5], cov, _n2)
+    cluster3 = np.random.multivariate_normal([3.5, 3], cov, _n3)
+    return np.vstack((cluster1, cluster2, cluster3)), _n, _k
 
 
 def dckfinallosscalc(dck):
@@ -41,7 +55,7 @@ def dckfinallosscalc(dck):
         assignments = np.append(assignments, dck.dc_tree[1][i].assignments, axis=0)
     for x in range(data.shape[0]):
         d = np.linalg.norm(data[x, :] - final_centroids, axis=1)
-        assignments[i] = int(np.argmin(d))
+        assignments[x] = int(np.argmin(d))
         loss += np.min(d) ** 2
 
     loss = loss / data.shape[0]
@@ -51,19 +65,19 @@ def dckfinallosscalc(dck):
 def comparison():
     print('______________________COMPARISON__________________________')
     kmeans = Kmeans(k)
-    centers, assignments, loss = kmeans.run(mnist.copy())
+    centers, assignments, loss = kmeans.run(dataset.copy())
     print(f'Kmeans Training Clustering loss is {loss}')
-    print(f'Kmeans Training Silhouette Coefficient is {silhouette_score(mnist, assignments)}')
+    print(f'Kmeans Training Silhouette Coefficient is {silhouette_score(dataset, assignments)}')
 
     qkmeans = QKmeans(k, 0.05)
-    q_centers, q_assignments, q_loss = qkmeans.run(mnist.copy())
+    q_centers, q_assignments, q_loss = qkmeans.run(dataset.copy())
     print(f'QKmeans Training Clustering loss is {q_loss}')
-    print(f'QKmeans Training Silhouette Coefficient is {silhouette_score(mnist, q_assignments)}')
+    print(f'QKmeans Training Silhouette Coefficient is {silhouette_score(dataset, q_assignments)}')
 
     dckmeans = DCKmeans([k, k], [1, 16])
-    dc_centers, dc_assignments, dc_loss = dckmeans.run(mnist.copy(), assignments=True)
+    dc_centers, dc_assignments, dc_loss = dckmeans.run(dataset.copy(), assignments=True)
     print(f'DCKmeans Training Clustering loss is {dc_loss}')
-    print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(mnist, dc_assignments)}')
+    print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(dataset, dc_assignments)}')
 
     print('Simulation deletion stream for Kmeans')
     online_deletion_stream(100, kmeans)
@@ -85,18 +99,18 @@ def comparison():
 def qkmeansvaryeps():
     print('______________________QKMEANS WITH VARYING EPSILON__________________________')
     qkmeans1 = QKmeans(k, 0.05)
-    q_centers1, q_assignments1, q_loss1 = qkmeans1.run(mnist.copy())
+    q_centers1, q_assignments1, q_loss1 = qkmeans1.run(dataset.copy())
     print(f'QKmeans 0.05 Training Clustering loss is {q_loss1}')
-    print(f'QKMeans Training Silhouette Coefficient is {silhouette_score(mnist, q_assignments1)}')
+    print(f'QKMeans Training Silhouette Coefficient is {silhouette_score(dataset, q_assignments1)}')
 
     qkmeans2 = QKmeans(k, 0.005)
-    q_centers2, q_assignments2, q_loss2 = qkmeans2.run(mnist.copy())
+    q_centers2, q_assignments2, q_loss2 = qkmeans2.run(dataset.copy())
     print(f'QKmeans 0.005 Training Clustering loss is {q_loss2}')
-    print(f'QKMeans Training Silhouette Coefficient is {silhouette_score(mnist, q_assignments2)}')
+    print(f'QKMeans Training Silhouette Coefficient is {silhouette_score(dataset, q_assignments2)}')
     qkmeans3 = QKmeans(k, 0.5)
-    q_centers3, q_assignments3, q_loss3 = qkmeans3.run(mnist.copy())
+    q_centers3, q_assignments3, q_loss3 = qkmeans3.run(dataset.copy())
     print(f'QKmeans 0.5 Training Clustering loss is {q_loss3}')
-    print(f'QKMeans Training Silhouette Coefficient is {silhouette_score(mnist, q_assignments3)}')
+    print(f'QKMeans Training Silhouette Coefficient is {silhouette_score(dataset, q_assignments3)}')
     print('Simulation deletion stream for Qkmeans 0.05')
     online_deletion_stream(100, qkmeans1)
     print(f'QKmeans Clustering loss after unlearning is {qkmeans1.minloss}')
@@ -114,18 +128,18 @@ def qkmeansvaryeps():
 def dckmeansvaryw():
     print('______________________DCKMEANS WITH VARYING W__________________________')
     dckmeans1 = DCKmeans([k, k], [1, 16])
-    dc_centers1, dc_assignments1, dc_loss1 = dckmeans1.run(mnist.copy(), assignments=True)
+    dc_centers1, dc_assignments1, dc_loss1 = dckmeans1.run(dataset.copy(), assignments=True)
     print(f'DCKmeans 16 Training Clustering loss is {dc_loss1}')
-    print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(mnist, dc_assignments1)}')
+    print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(dataset, dc_assignments1)}')
     dckmeans2 = DCKmeans([k, k], [1, 160])
-    dc_centers2, dc_assignments2, dc_loss2 = dckmeans2.run(mnist.copy(), assignments=True)
+    dc_centers2, dc_assignments2, dc_loss2 = dckmeans2.run(dataset.copy(), assignments=True)
     print(f'DCKmeans 160 Training Clustering loss is {dc_loss2}')
-    print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(mnist, dc_assignments2)}')
+    print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(dataset, dc_assignments2)}')
 
     dckmeans3 = DCKmeans([k, k], [1, 1600])
-    dc_centers3, dc_assignments3, dc_loss3 = dckmeans3.run(mnist.copy(), assignments=True)
+    dc_centers3, dc_assignments3, dc_loss3 = dckmeans3.run(dataset.copy(), assignments=True)
     print(f'DCKmeans 1600 Training Clustering loss is {dc_loss3}')
-    print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(mnist, dc_assignments3)}')
+    print(f'DCKmeans Training Silhouette Coefficient is {silhouette_score(dataset, dc_assignments3)}')
 
     print('Simulation deletion stream for DCkmeans 16')
     online_deletion_stream(100, dckmeans1)
@@ -141,13 +155,17 @@ def dckmeansvaryw():
 
     print('Simulation deletion stream for DCkmeans 1600')
     online_deletion_stream(100, dckmeans3)
-    final_centroids1, final_data3, final_assignments3, final_loss3 = dckfinallosscalc(dckmeans3)
+    final_centroids3, final_data3, final_assignments3, final_loss3 = dckfinallosscalc(dckmeans3)
     print(f'DCKmeans Clustering loss after unlearning is {final_loss3}')
     print(f'DCKmeans Silhouette Coefficient after unlearning is {silhouette_score(final_data3, final_assignments3)}')
 
 
 if __name__ == '__main__':
-    mnist, mnist_labels, n, k = prepare_mnist()
+    dataset, n, k = prepare_mnist()
+    comparison()
+    qkmeansvaryeps()
+    dckmeansvaryw()
+    dataset, n, k = prepare_sampleclusters()
     comparison()
     qkmeansvaryeps()
     dckmeansvaryw()
